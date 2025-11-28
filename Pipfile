@@ -9,6 +9,9 @@ uvicorn = "*"
 sqlalchemy = "*"
 sqlalchemy-utils = "*"
 psycopg2-binary = "*"
+werkzeug = "*"
+fastapi-jwt-auth = "*"
+fastapi-jwt-auth-v2 = "*"
 
 [dev-packages]
 
