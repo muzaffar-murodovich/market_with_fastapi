@@ -25,7 +25,7 @@ class Order(Base):
     __tablename__ = "order"
     id = Column(Integer, primary_key=True)
     quantity = Column(Integer, nullable=False)
-    order_status = Column(ChoiceType(choices=ORDER_STATUSES))
+    order_statuses = Column(ChoiceType(choices=ORDER_STATUSES), default="PENDING")
     user_id = Column(Integer, ForeignKey("user.id"))
     user = relationship("User", back_populates="orders")
     product_id = Column(Integer, ForeignKey("product.id"))

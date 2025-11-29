@@ -1,5 +1,5 @@
+from datetime import timedelta
 from fastapi import APIRouter, Depends
-from fastapi.encoders import jsonable_encoder
 from fastapi_jwt_auth import AuthJWT
 from starlette import status
 from models import User
@@ -29,12 +29,12 @@ async def welcome(Authorize: AuthJWT = Depends()):
 async def signup(user: SignUpModel):
     db_email = session.query(User).filter(User.email == user.email).first()
     if db_email is not None:
-        return HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                              detail='User with this email already exists')
 
     db_username = session.query(User).filter(User.username == user.username).first()
     if db_username is not None:
-        return HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                              detail='User with this username already exists')
 
     new_user = User(
@@ -73,8 +73,10 @@ async def login(user: LoginModel, Authorize: AuthJWT=Depends()):
     ).first()
 
     if db_user and check_password_hash(db_user.password, user.password):
-        access_token = Authorize.create_access_token(subject=db_user.username)
-        refresh_token = Authorize.create_refresh_token(subject=db_user.username)
+        access_lifetime = timedelta(minutes=30)
+        refresh_lifetime = timedelta(days=3)
+        access_token = Authorize.create_access_token(subject=db_user.username, expires_time=access_lifetime)
+        refresh_token = Authorize.create_refresh_token(subject=db_user.username, expires_time=refresh_lifetime)
 
         token = {
             "access": access_token,
@@ -88,21 +90,23 @@ async def login(user: LoginModel, Authorize: AuthJWT=Depends()):
             'data': token
         }
 
-        return jsonable_encoder(response)
+        return response
     raise HTTPException(status_code=400, detail="Incorrect username or password")
 
 @auth_router.get("/login/refresh")
 async def login_refresh(Authorize: AuthJWT = Depends()):
 
     try:
-        Authorize.jwt_required()
+        access_lifetime = timedelta(minutes=30)
+        refresh_lifetime = timedelta(days=3)
+        Authorize.jwt_refresh_token_required()
         current_user = Authorize.get_jwt_subject()
 
         db_user = session.query(User).filter(User.username == current_user).first()
         if db_user is None:
             raise HTTPException(status_code=404, detail="User not found")
 
-        new_access_token = Authorize.create_access_token(subject=db_user.username)
+        new_access_token = Authorize.create_access_token(subject=db_user.username, expires_time=access_lifetime)
         response_model = {
             'success': True,
             'code': 201,
@@ -114,4 +118,4 @@ async def login_refresh(Authorize: AuthJWT = Depends()):
         return response_model
 
     except Exception as e:
-        raise HTTPException(status_code=401, detail="Invalid access token")
+        raise HTTPException(status_code=401, detail="Invalid refresh token")

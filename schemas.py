@@ -28,3 +28,30 @@ class Settings(BaseModel):
 class LoginModel(BaseModel):
     username_or_email: str
     password: str
+
+class OrderModel(BaseModel):
+    id: Optional[int]
+    quantity: int
+    order_statuses: Optional[str] = "PENDING"
+    user_id: Optional[int]
+    product_id: Optional[int]
+
+    class Config:
+        orm_mode = True
+        schema_extra = {
+            "example": {
+                "quantity": 1,
+                "product_id": 1
+            }
+        }
+
+# class OrderStatusModel(BaseModel):
+#     order_statuses: Optional[str] = "PENDING"
+#
+#     class Config:
+#         orm_mode = True
+#         schema_extra = {
+#             "example": {
+#                 "order_statuses": "PENDING"
+#             }
+#         }
