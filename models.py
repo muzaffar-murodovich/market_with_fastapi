@@ -17,7 +17,7 @@ class User(Base):
         return f"<user {self.username}"
 
 class Order(Base):
-    ORDER_STATUSES = (
+    ORDER_STATUS = (
         ('PENDING', 'pending'),
         ('IN_TRANSIT', 'in_transit'),
         ('DELIVERED', 'delivered'),
@@ -25,7 +25,7 @@ class Order(Base):
     __tablename__ = "order"
     id = Column(Integer, primary_key=True)
     quantity = Column(Integer, nullable=False)
-    order_statuses = Column(ChoiceType(choices=ORDER_STATUSES), default="PENDING")
+    order_status = Column(ChoiceType(choices=ORDER_STATUS), default="PENDING")
     user_id = Column(Integer, ForeignKey("user.id"))
     user = relationship("User", back_populates="orders")
     product_id = Column(Integer, ForeignKey("product.id"))

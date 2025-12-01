@@ -30,11 +30,11 @@ class LoginModel(BaseModel):
     password: str
 
 class OrderModel(BaseModel):
-    id: Optional[int]
+    id: Optional[int] = None
     quantity: int
-    order_statuses: Optional[str] = "PENDING"
-    user_id: Optional[int]
-    product_id: Optional[int]
+    order_status: Optional[str] = "PENDING"
+    user_id: Optional[int] = None
+    product_id: int
 
     class Config:
         orm_mode = True
@@ -46,13 +46,13 @@ class OrderModel(BaseModel):
         }
 
 class OrderStatusModel(BaseModel):
-    order_statuses: Optional[str] = "PENDING"
+    order_status: Optional[str] = "PENDING"
 
     class Config:
         orm_mode = True
         schema_extra = {
             "example": {
-                "order_statuses": "PENDING"
+                "order_status": "PENDING"
             }
         }
 
