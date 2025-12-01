@@ -45,13 +45,27 @@ class OrderModel(BaseModel):
             }
         }
 
-# class OrderStatusModel(BaseModel):
-#     order_statuses: Optional[str] = "PENDING"
-#
-#     class Config:
-#         orm_mode = True
-#         schema_extra = {
-#             "example": {
-#                 "order_statuses": "PENDING"
-#             }
-#         }
+class OrderStatusModel(BaseModel):
+    order_statuses: Optional[str] = "PENDING"
+
+    class Config:
+        orm_mode = True
+        schema_extra = {
+            "example": {
+                "order_statuses": "PENDING"
+            }
+        }
+
+class ProductModel(BaseModel):
+    id: Optional[int] = None
+    name: str
+    price: int
+
+    class Config:
+        orm_mode = True
+        schema_extra = {
+            "example": {
+                "name": "Uzbek plov",
+                "price": 30000
+            }
+        }
